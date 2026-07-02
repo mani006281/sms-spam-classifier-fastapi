@@ -1,0 +1,5 @@
+Best model: MultinomialNB
+Accuracy: 0.9704
+Precision: 0.9915
+Recall: 0.7852
+F1-score: 0.8764
