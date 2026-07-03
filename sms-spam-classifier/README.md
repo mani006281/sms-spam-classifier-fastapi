@@ -1,54 +1,97 @@
 # SMS Spam Classifier — ML + REST API
 
-A machine learning project that classifies SMS/text messages as **Spam** or **Ham** (not spam), trained on the public SMS Spam Collection dataset (5,572 labeled messages) and served through a **FastAPI** REST API.
+A Machine Learning project that classifies SMS/text messages as **Spam** or **Ham** (Not Spam) using a **TF-IDF + Multinomial Naive Bayes** model, served through a **FastAPI REST API**.
 
-This project combines a classic NLP/ML pipeline with a backend API layer, so the model can be consumed by any client (web app, mobile app, or another service) via HTTP.
+The model is trained on the **SMS Spam Collection Dataset** containing **5,572 labeled SMS messages** and can be accessed through REST endpoints for seamless integration with web, mobile, or backend applications.
 
-## How it works
+---
 
-1. **Text preprocessing** — lowercasing, URL/number removal, punctuation stripping
-2. **Feature extraction** — TF-IDF vectorization (unigrams + bigrams, top 3000 features)
-3. **Model training** — compared Multinomial Naive Bayes vs Logistic Regression, selected the best based on F1-score
-4. **Serving** — the trained model and vectorizer are saved with `joblib` and loaded once at API startup for fast inference
+# 🚀 Live Demo
 
-## Model Performance
+### API Base URL
 
-Evaluated on a held-out 20% test split (1,115 messages):
+https://sms-spam-classifier-fastapi.onrender.com
+
+### Swagger API Documentation
+
+https://sms-spam-classifier-fastapi.onrender.com/docs
+
+---
+
+# 📖 How It Works
+
+1. Text preprocessing
+   - Convert text to lowercase
+   - Remove URLs
+   - Remove numbers
+   - Remove punctuation
+   - Remove extra spaces
+
+2. Feature Extraction
+   - TF-IDF Vectorization
+   - Unigrams + Bigrams
+   - Top 3000 Features
+
+3. Model Training
+   - Compared Logistic Regression and Multinomial Naive Bayes
+   - Selected the best model using the F1-score
+
+4. Model Serving
+   - Saved the trained model and vectorizer using **Joblib**
+   - Loaded once during FastAPI startup for faster predictions
+
+---
+
+# 📊 Model Performance
+
+Evaluated on a held-out **20% test dataset (1,115 messages)**
 
 | Metric | Score |
-|---|---|
-| Accuracy | 97.04% |
-| Precision (spam) | 99.15% |
-| Recall (spam) | 78.52% |
-| F1-score (spam) | 87.64% |
+|---------|-------|
+| Accuracy | **97.04%** |
+| Precision (Spam) | **99.15%** |
+| Recall (Spam) | **78.52%** |
+| F1-Score (Spam) | **87.64%** |
 
-High precision means the model rarely flags a real message as spam (few false positives) — important for a spam filter, since blocking a genuine message is worse than letting an occasional spam message through.
+The model achieves **97.04% accuracy** with very high precision, meaning it rarely classifies genuine messages as spam.
 
-## Tech Stack
+---
 
-- **ML:** scikit-learn (TF-IDF, Multinomial Naive Bayes, Logistic Regression)
-- **Data handling:** pandas
-- **API:** FastAPI + Uvicorn
-- **Model persistence:** joblib
-- **Validation:** Pydantic
+# 🛠 Tech Stack
 
-## API Endpoints
+- Python
+- FastAPI
+- Uvicorn
+- Scikit-learn
+- Pandas
+- Joblib
+- Pydantic
+
+---
+
+# 📌 API Endpoints
 
 | Method | Endpoint | Description |
-|---|---|---|
-| GET | `/` | Health check |
-| POST | `/predict` | Classify a single message |
-| POST | `/predict/batch` | Classify multiple messages at once |
+|---------|----------|-------------|
+| GET | `/` | Health Check |
+| POST | `/predict` | Predict a Single SMS |
+| POST | `/predict/batch` | Predict Multiple SMS Messages |
 
-### Example request
+---
+
+# 📥 Example Request
 
 ```bash
 curl -X POST http://localhost:8000/predict \
-  -H "Content-Type: application/json" \
-  -d '{"message": "WINNER! You have been selected to receive a cash prize! Call now to claim!"}'
+-H "Content-Type: application/json" \
+-d '{
+"message":"WINNER! You have been selected to receive a cash prize! Call now to claim!"
+}'
 ```
 
-### Example response
+---
+
+# 📤 Example Response
 
 ```json
 {
@@ -59,44 +102,113 @@ curl -X POST http://localhost:8000/predict \
 }
 ```
 
-## Getting Started
+---
+
+# ⚙️ Getting Started
+
+### 1. Clone the Repository
 
 ```bash
-# 1. Install dependencies
+git clone https://github.com/mani006281/sms-spam-classifier-fastapi.git
+cd sms-spam-classifier-fastapi/sms-spam-classifier
+```
+
+### 2. Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-# 2. (Optional) Retrain the model from scratch
+### 3. (Optional) Retrain the Model
+
+```bash
 python train_model.py
+```
 
-# 3. Start the API server
+### 4. Start the FastAPI Server
+
+```bash
 uvicorn app.main:app --reload
-
-# 4. Open interactive API docs
-# http://localhost:8000/docs
 ```
 
-## Project Structure
+### 5. Open API Documentation
+
+Local
 
 ```
+http://localhost:8000/docs
+```
+
+Live Deployment
+
+```
+https://sms-spam-classifier-fastapi.onrender.com/docs
+```
+
+---
+
+# 📁 Project Structure
+
+```text
+sms-spam-classifier
+│
 ├── app/
-│   └── main.py          # FastAPI application and endpoints
+│   └── main.py
+│
 ├── model/
-│   ├── spam_model.pkl    # Trained classifier
-│   ├── vectorizer.pkl    # Fitted TF-IDF vectorizer
-│   └── model_info.txt    # Saved evaluation metrics
-├── train_model.py        # Data loading, preprocessing, training, evaluation
-├── data_raw.csv           # SMS Spam Collection dataset
+│   ├── spam_model.pkl
+│   ├── vectorizer.pkl
+│   └── model_info.txt
+│
+├── train_model.py
+├── data_raw.csv
 ├── requirements.txt
+├── runtime.txt
 └── README.md
 ```
 
-## Dataset
+---
 
-[SMS Spam Collection Dataset](https://archive.ics.uci.edu/dataset/228/sms+spam+collection) — 5,572 SMS messages (4,825 ham, 747 spam), UCI Machine Learning Repository / Kaggle.
+# 📚 Dataset
 
-## Future Improvements
+**SMS Spam Collection Dataset**
 
-- Add a simple frontend to test predictions interactively
-- Experiment with deep learning (LSTM/BERT) for higher recall
-- Add authentication for the API
-- Deploy to a cloud platform (Render/Railway) for a live demo link
+- 5,572 SMS Messages
+- 4,825 Ham Messages
+- 747 Spam Messages
+
+Source:
+
+https://archive.ics.uci.edu/dataset/228/sms+spam+collection
+
+---
+
+# 🚀 Future Improvements
+
+- Develop a modern web frontend for real-time predictions
+- Improve accuracy using Deep Learning models (LSTM/BERT)
+- Add JWT Authentication
+- Add Docker support
+- Implement CI/CD with GitHub Actions
+- Deploy multiple API versions
+
+---
+
+# 👨‍💻 Author
+
+**Mani Kumar Penugonda**
+
+Backend Developer | Python | FastAPI | Machine Learning
+
+**GitHub**
+https://github.com/mani006281
+
+**LinkedIn**
+https://www.linkedin.com/in/mani-kumar-penugonda-096705363
+
+**Email**
+penugondamanikumar99@gmail.com
+
+---
+
+# ⭐ If you found this project useful, please consider giving it a Star on GitHub.
